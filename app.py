@@ -1,11 +1,8 @@
 import streamlit as st
 import requests
 
-# Hugging Face Inference API endpoint (DialoGPT-medium is free to use)
 API_URL = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
-
-# Replace with your own Hugging Face API token (free signup at huggingface.co)
-headers = {"Authorization": "Bearer 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"}
+headers = {"Authorization": "Bearer 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"}  # paste your token here
 
 def query(payload):
     response = requests.post(API_URL, headers=headers, json=payload)
@@ -18,8 +15,10 @@ user_input = st.text_input("You: ")
 
 if user_input:
     output = query({"inputs": user_input})
-    # The API returns a list of generated_text
-    if isinstance(output, list) and "generated_text" in output[0]:
+    # Handle both dict and list formats
+    if isinstance(output, dict) and "generated_text" in output:
+        st.write("Bot:", output["generated_text"])
+    elif isinstance(output, list) and len(output) > 0 and "generated_text" in output[0]:
         st.write("Bot:", output[0]["generated_text"])
     else:
-        st.write("Bot: Sorry, I couldn't generate a reply.")
+        st.write("Bot: (Model is loading or no reply yet)")
