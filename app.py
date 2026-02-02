@@ -1,15 +1,18 @@
 import streamlit as st
 import requests
 
-# Use the new Hugging Face Router API
+# Use Hugging Face Router API with a conversational model
 API_URL = "https://router.huggingface.co/microsoft/DialoGPT-medium"
 
-# Your Hugging Face API token (already inserted)
+# Your Hugging Face API token
 headers = {"Authorization": "Bearer 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"}
 
 def query(payload):
     response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        return {"error": response.text}
 
 st.title("🤖 AI Chatbot (Hugging Face API)")
 st.write("Ask me anything and I'll reply with AI-powered responses!")
@@ -25,5 +28,7 @@ if user_input:
         st.write("Bot:", output["generated_text"])
     elif isinstance(output, list) and len(output) > 0 and "generated_text" in output[0]:
         st.write("Bot:", output[0]["generated_text"])
+    elif "error" in output:
+        st.write("Bot: Error from API →", output["error"])
     else:
         st.write("Bot: Model is loading or no reply yet")
