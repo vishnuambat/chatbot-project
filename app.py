@@ -5,7 +5,7 @@ import requests
 API_URL = "https://router.huggingface.co/microsoft/DialoGPT-medium"
 
 # Your Hugging Face API token
-headers = {"Authorization": "Bearer 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"}
+headers = {"Authorization": "Bearer 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"}
 
 def query(payload):
     response = requests.post(API_URL, headers=headers, json=payload)
