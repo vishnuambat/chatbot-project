@@ -1,20 +1,25 @@
 import streamlit as st
-import random
+import requests
 
-st.title("🤖 Free AI Chatbot")
-st.write("Type a message below and chat with the bot!")
+# Hugging Face Inference API endpoint (DialoGPT-medium is free to use)
+API_URL = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
 
-# Simple rule-based responses
-responses = [
-    "That's interesting! Tell me more.",
-    "I see. How do you feel about that?",
-    "Can you explain a bit further?",
-    "Hmm, that's something to think about.",
-    "Got it! What else is on your mind?"
-]
+# Replace with your own Hugging Face API token (free signup at huggingface.co)
+headers = {"Authorization": "Bearer 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"}
+
+def query(payload):
+    response = requests.post(API_URL, headers=headers, json=payload)
+    return response.json()
+
+st.title("🤖 AI Chatbot (Hugging Face API)")
+st.write("Ask me anything and I'll reply with AI-powered responses!")
 
 user_input = st.text_input("You: ")
 
 if user_input:
-    bot_reply = random.choice(responses)
-    st.write("Bot:", bot_reply)
+    output = query({"inputs": user_input})
+    # The API returns a list of generated_text
+    if isinstance(output, list) and "generated_text" in output[0]:
+        st.write("Bot:", output[0]["generated_text"])
+    else:
+        st.write("Bot: Sorry, I couldn't generate a reply.")
