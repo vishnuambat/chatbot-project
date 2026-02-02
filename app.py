@@ -1,23 +1,16 @@
 import streamlit as st
-from transformers import pipeline, Conversation
+from transformers import pipeline
 
-# Load a pre-trained conversational model
-chatbot = pipeline("conversational", model="microsoft/DialoGPT-medium")
+# Load a pre-trained text generation model
+chatbot = pipeline("text-generation", model="gpt2")
 
 st.title("🤖 Free AI Chatbot")
 st.write("Type a message below and chat with the bot!")
 
-# Keep track of conversation across turns
-if "conversation" not in st.session_state:
-    st.session_state.conversation = None
-
+# User input box
 user_input = st.text_input("You: ")
 
+# Generate response when user types something
 if user_input:
-    if st.session_state.conversation is None:
-        st.session_state.conversation = Conversation(user_input)
-    else:
-        st.session_state.conversation.add_user_input(user_input)
-
-    response = chatbot(st.session_state.conversation)
-    st.write("Bot:", response.generated_responses[-1])
+    response = chatbot(user_input, max_length=100, num_return_sequences=1)
+    st.write("Bot:", response[0]['generated_text'])
